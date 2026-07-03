@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Наша Дораматека</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>🎬 DoramaFamily</h1>
+    <a href="wheel.html" target="_blank" class="menu-btn">🎡 Крутить Колесо</a>
+  </header>
+
+  <div class="controls">
+    <input type="text" id="searchInput" placeholder="Поиск дорамы по названию...">
+    
+    <!-- СОРТИРОВКА -->
+    <select id="sortOrder">
+      <option value="default">По порядку добавления</option>
+      <option value="alphabet">По алфавиту (А-Я)</option>
+    </select>
+
+    <select id="genreFilter">
+      <option value="all">Все жанры</option>
+      <option value="Комедия">Комедия</option>
+      <option value="Романтика">Романтика</option>
+      <option value="Фэнтези">Фэнтези</option>
+      <option value="Драма">Драма</option>
+      <option value="Триллер">Триллер</option>
+      <option value="Детектив">Детектив</option>
+      <option value="Экшен">Экшен</option>
+      <option value="Ужасы">Ужасы</option>
+      <option value="Медицина">Медицина</option>
+      <option value="Школа">Школа</option>
+      <option value="Повседневность">Повседневность</option>
+    </select>
+
+    <select id="statusFilter">
+      <option value="all">Все списки</option>
+      <option value="запланировано">Хотим посмотреть</option>
+      <option value="смотрим">Смотрим</option>
+      <option value="посмотрено">Посмотрено</option>
+      <option value="брошено">Бросили</option>
+    </select>
+  </div>
+
+  <div class="grid" id="doramasGrid"></div>
+  <div class="pagination" id="pagination"></div>
+
+  <script src="data.js"></script>
+  <script>
+    let filteredData = [...doramasData];
+    let currentPage = 1;
+    const itemsPerPage = 34;
+
+    const grid = document.getElementById('doramasGrid');
+    const paginationContainer = document.getElementById('pagination');
+    const searchInput = document.getElementById('searchInput');
+    const genreFilter = document.getElementById('genreFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const sortOrder = document.getElementById('sortOrder');
+
+    const statusColors = { запланировано: '#ff9f43', смотрим: '#00d2d3', посмотрено: '#10ac84', брошено: '#ee5253' };
+
+    function filterAndRender() {
+      const search = searchInput.value.toLowerCase();
+      const status = statusFilter.value;
+      const genre = genreFilter.value;
+      const sort = sortOrder.value;
+
+      // 1. Фильтрация
+      let result = doramasData.filter(d => {
+        const matchesSearch = d.title.toLowerCase().includes(search);
+        const matchesStatus = status === 'all' || d.status === status;
+        const matchesGenre = genre === 'all' || (d.genres && d.genres.includes(genre));
+        return matchesSearch && matchesStatus && matchesGenre;
+      });
+
+      // 2. Сортировка по алфавиту
+      if (sort === 'alphabet') {
+        result.sort((a, b) => a.title.localeCompare(b.title));
+      }
+
+      filteredData = result;
+      currentPage = 1;
+      renderGrid();
+    }
+
+    function renderGrid() {
+      grid.innerHTML = '';
+      const start = (currentPage - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      const pageItems = filteredData.slice(start, end);
+
+      if(pageItems.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center;">Ничего не найдено 😢</p>';
+        paginationContainer.innerHTML = '';
+        return;
+      }
+
+      pageItems.forEach(d => {
+        const card = document.createElement('a');
+        card.className = 'card';
+        card.href = `dorama.html?id=${d.id}`;
+        card.target = "";
+        
+        const genresText = d.genres ? d.genres.join(', ') : '';
+        
+        // Проверка: если картинки нет, показываем серый блок с названием дорамы
+        const imageHtml = d.banner === "МЕСТО_ДЛЯ_БАННЕРА" 
+          ? `<div style="width:100%; height:360px; background:#444; display:flex; align-items:center; justify-content:center; text-align:center; padding:10px; box-sizing:border-box;">[Нет баннера для <br>${d.title}]</div>`
+          : `<img src="${d.banner}" alt="${d.title}">`;
+
+       const ratingVal = d.ratings ? ((d.ratings.kolya + d.ratings.nika) / 2) : 0;
+
+card.innerHTML = `
+  ${imageHtml}
+  <div class="card-info">
+    <div class="card-title">${d.title}</div>
+    <div style="font-size: 13px; color: #aaa; margin-bottom: 8px;">${genresText}</div>
+    <span class="badge" style="background:${statusColors[d.status]}">${d.status}</span>
+    <span style="float:right; color:#f1c40f;">★ ${ratingVal.toFixed(1)}</span>
+  </div>
+`;
+        grid.appendChild(card);
+      });
+
+      renderPagination();
+    }
+
+    function renderPagination() {
+      paginationContainer.innerHTML = '';
+      const pageCount = Math.ceil(filteredData.length / itemsPerPage);
+      if (pageCount <= 1) return;
+
+      for (let i = 1; i <= pageCount; i++) {
+        const btn = document.createElement('button');
+        btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+        btn.innerText = i;
+        btn.onclick = () => {
+          currentPage = i;
+          renderGrid();
+          window.scrollTo({top: 0, behavior: 'smooth'});
+        };
+        paginationContainer.appendChild(btn);
+      }
+    }
+
+    searchInput.addEventListener('input', filterAndRender);
+    genreFilter.addEventListener('change', filterAndRender);
+    statusFilter.addEventListener('change', filterAndRender);
+    sortOrder.addEventListener('change', filterAndRender);
+    
+    filterAndRender();
+  </script>
+</body>
+</html>

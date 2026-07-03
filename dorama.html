@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Страница Дорамы</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Маленький доп-стиль для отображения тегов жанров */
+    .genre-tag {
+      display: inline-block;
+      background: #333;
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin-right: 5px;
+      font-size: 14px;
+      color: #ccc;
+    }
+    .status-block {
+      margin-top: 15px;
+      padding: 10px;
+      background: #222;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <a href="index.html" class="back-link">← Вернуться в каталог</a>
+
+    <div class="main-info">
+      <img id="doramaBanner" src="" alt="">
+      <div class="details">
+        <h1 id="doramaTitle" class="dorama-h1">Загрузка...</h1>
+        
+        <!-- СЮДА ВСТАВЯТСЯ ЖАНРЫ -->
+        <div id="doramaGenres" style="margin-bottom: 15px;"></div>
+
+        <p class="desc" id="doramaDesc"></p>
+        
+       <div class="rating-block" id="dorama-ratings"></div>
+
+        <!-- ТЕКУЩИЙ СТАТУС ДОРАМЫ -->
+        <div class="status-block">
+          Статус просмотра: <span id="doramaStatus" style="color: var(--dorama-color);"></span>
+        </div>
+      </div>
+    </div>
+
+    <h2>Галерея кадров (5 штук)</h2>
+    <div class="gallery" id="doramaGallery"></div>
+
+    <div class="reviews-section">
+      <h2>Наши отзывы и мнения</h2>
+      <div class="review-box">
+        <div class="review-author">Коля</div>
+        <div id="reviewKolya">Оставь свой отзыв в базе данных...</div>
+      </div>
+      <div class="review-box">
+        <div class="review-author">Ника</div>
+        <div id="reviewFriend">Отзыв подруги...</div>
+      </div>
+    </div>
+  </div>
+<div id="imageModal" class="image-modal">
+  <img id="modalImg" src="" alt="Просмотр изображения">
+</div>
+  <script src="data.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = parseInt(urlParams.get('id'));
+    const dorama = doramasData.find(d => d.id === id);
+
+    if (dorama) {
+      document.documentElement.style.setProperty('--dorama-color', dorama.color);
+      document.getElementById('doramaTitle').innerText = dorama.title;
+      document.getElementById('doramaDesc').innerText = dorama.description;
+      document.getElementById('doramaBanner').src = dorama.banner;
+      
+      // Выводим статус
+      document.getElementById('doramaStatus').innerText = dorama.status.toUpperCase();
+
+      // Выводим жанры на страницу
+      const genresContainer = document.getElementById('doramaGenres');
+      if(dorama.genres) {
+        dorama.genres.forEach(g => {
+          const span = document.createElement('span');
+          span.className = 'genre-tag';
+          span.innerText = g;
+          genresContainer.appendChild(span);
+        });
+      }
+
+
+
+renderDoramaRatings(dorama);
+
+      // Делаем кликабельным главный баннер
+      const mainBanner = document.getElementById('doramaBanner');
+      if (mainBanner) {
+        mainBanner.style.cursor = 'pointer';
+        mainBanner.addEventListener('click', () => openModal(mainBanner.src));
+      }
+
+      // Вывод галереи кадров с добавлением клика
+      const galleryContainer = document.getElementById('doramaGallery');
+      dorama.images.forEach(imgUrl => {
+        const img = document.createElement('img');
+        img.src = imgUrl;
+        img.alt = "Кадр из дорамы";
+        
+        // При клике на кадр — открываем его
+        img.addEventListener('click', () => openModal(imgUrl));
+        
+        galleryContainer.appendChild(img);
+      });
+
+      // Логика работы модального окна
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImg');
+
+      function openModal(src) {
+        modalImg.src = src;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden'; /* Отключаем прокрутку страницы */
+      }
+
+      // Закрытие при клике в любое место модалки
+      modal.addEventListener('click', () => {
+        modal.classList.remove('active');
+        document.body.style.overflow = ''; /* Возвращаем прокрутку */
+      });
+
+      // Вывод отзывов
+      if (dorama.ourReviews) {
+        document.getElementById('reviewKolya').innerText = dorama.ourReviews.kolya || "Пока нет отзыва.";
+        document.getElementById('reviewFriend').innerText = dorama.ourReviews.nika || "Пока нет отзыва.";
+      } else {
+        document.getElementById('reviewKolya').innerText = "Пока нет отзыва.";
+        document.getElementById('reviewFriend').innerText = "Пока нет отзыва.";
+      }
+    } else {
+      document.body.innerHTML = "<h1>Дорама не найдена!</h1><a href='index.html'>Назад</a>";
+    }
+  </script>
+</body>
+</html>

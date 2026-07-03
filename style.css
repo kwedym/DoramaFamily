@@ -1,0 +1,332 @@
+/* Общие переменные */
+:root {
+  --bg-color: #1a1a1a;
+  --card-bg: #2d2d2d;
+  --text-color: #ffffff;
+  --accent-color: #e50914;
+  --radius: 16px;
+  --dorama-color: #ff4d79; /* Переменная для кастомного цвета дорам */
+}
+
+/* Базовые стили  */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: Arial, sans-serif;
+  margin: 0; 
+  padding: 20px;
+  line-height: 1.25;
+}
+
+/* Шапка */
+header {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  margin-bottom: 30px; 
+  flex-wrap: wrap; 
+  gap: 15px;
+}
+
+h1 { margin: 0; font-size: 28px; }
+
+.menu-btn {
+  background: var(--accent-color); 
+  color: white; 
+  padding: 10px 20px;
+  border: none; 
+  border-radius: var(--radius); 
+  text-decoration: none; 
+  font-weight: bold;
+}
+
+.back-link, .back { 
+  color: #aaa; 
+  text-decoration: none; 
+  display: inline-block; 
+  margin-bottom: 20px; 
+}
+.back-link:hover, .back:hover { color: var(--accent-color); }
+
+/* Поиск и Фильтр */
+.controls {
+  display: flex; 
+  gap: 15px; 
+  margin-bottom: 30px; 
+  flex-wrap: wrap;
+}
+
+input[type="text"], select {
+  background: var(--card-bg); 
+  color: white; 
+  border: 1px solid #444;
+  padding: 12px; 
+  border-radius: var(--radius); 
+  outline: none; 
+  font-size: 16px;
+}
+input[type="text"] { flex-grow: 1; }
+
+/* Сетка главной стр */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px; 
+  margin-bottom: 40px;
+}
+
+.card {
+  background: var(--card-bg); 
+  border-radius: var(--radius);
+  overflow: hidden; 
+  text-decoration: none; 
+  color: white;
+  transition: transform 0.3s ease; 
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+.card:hover { transform: translateY(-5px); }
+.card img {
+    width: 100%;
+    /* Автоматически держит пропорцию 2:3 (ширина 2 части, высота 3 части) */
+    aspect-ratio: 2 / 3; 
+    object-fit: cover;
+    object-position: top center; /* Смещает фокус картинки к верхней части, чтобы не резались головы */
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    display: block;
+}
+.card-info { padding: 15px; }
+.card-title { font-size: 18px; margin: 0 0 10px 0; font-weight: bold; }
+
+.badge {
+  display: inline-block; 
+  padding: 5px 10px; 
+  border-radius: 8px;
+  font-size: 12px; 
+  font-weight: bold; 
+  text-transform: uppercase;
+}
+
+/* Стили пагинации */
+.pagination { 
+  display: flex; 
+  justify-content: center; 
+  gap: 10px; 
+  margin-top: 30px; 
+}
+.page-btn {
+  background: var(--card-bg); 
+  color: white; 
+  border: 1px solid #444;
+  padding: 10px 15px; 
+  border-radius: 8px; 
+  cursor: pointer; 
+  font-size: 16px;
+}
+.page-btn.active { 
+  background: var(--accent-color); 
+  border-color: var(--accent-color); 
+}
+
+/* Стили страницы конкретной дорамы */
+.container { max-width: 1000px; margin: 0 auto; }
+.main-info { display: flex; gap: 30px; margin-bottom: 40px; }
+.main-info img { width: 300px; border-radius: var(--radius); object-fit: cover; }
+.details { flex-grow: 1; }
+.dorama-h1 { 
+  margin-top: 0; 
+  font-size: 36px; 
+  border-bottom: 3px solid var(--dorama-color); 
+  padding-bottom: 10px; 
+}
+.desc { font-size: 18px; color: #ccc; margin-bottom: 20px; }
+
+/* Оценки (Звезды) */
+.rating-block { 
+  background: var(--card-bg); 
+  padding: 15px; 
+  border-radius: var(--radius); 
+  margin-bottom: 20px; 
+}
+.stars-outer { 
+  display: inline-block; 
+  position: relative; 
+  font-size: 36px; 
+  color: #444; /* Цвет пустых звёзд */
+}
+
+
+.stars-inner { 
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  width: 0; 
+}
+.stars-outer::before, .stars-inner::before { content: "★★★★★"; }
+.rating-val { font-size: 20px; font-weight: bold; margin-left: 10px; vertical-align: middle; }
+
+/* Галерея кадров */
+.gallery { 
+  display: grid; 
+  grid-template-columns: repeat(5, 1fr); 
+  gap: 15px; 
+  margin-bottom: 40px; 
+}
+.gallery img { 
+  width: 100%; 
+  height: 120px; 
+  object-fit: cover; 
+  border-radius: 8px; 
+  cursor: pointer; 
+  transition: 0.2s; 
+}
+.gallery img:hover { transform: scale(1.05); }
+
+/* Отзывы */
+.reviews-section { background: var(--card-bg); padding: 25px; border-radius: var(--radius); }
+.review-box { border-left: 4px solid var(--dorama-color); padding-left: 15px; margin-bottom: 20px; }
+.review-author { font-weight: bold; color: var(--dorama-color); margin-bottom: 5px; }
+
+/* Колесо фортуны */
+.wheel-layout { 
+  display: flex; 
+  gap: 40px; 
+  align-items: center; 
+  margin-top: 20px; 
+  flex-wrap: wrap; 
+  justify-content: center; 
+}
+.wheel-container { position: relative; width: 350px; height: 350px; }
+.wheel {
+  width: 100%; 
+  height: 100%; 
+  border-radius: 50%; 
+  border: 10px solid #fff;
+  background: conic-gradient(#ff4d79 0% 25%, #9b5de5 25% 50%, #00bbf9 50% 75%, #00f5d4 75% 100%);
+  transition: transform 4s cubic-bezier(0.1, 0.8, 0.1, 1);
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+.pointer {
+  position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+  width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent;
+  border-top: 30px solid #fff; z-index: 10;
+}
+.spin-btn {
+  margin-top: 30px; background: #e50914; color: white; border: none;
+  padding: 15px 40px; font-size: 20px; font-weight: bold; border-radius: 30px;
+  cursor: pointer; box-shadow: 0 4px 15px rgba(229,9,20,0.4);
+}
+.spin-btn:disabled { background: #555; cursor: not-allowed; box-shadow: none; }
+
+.result-card {
+  background: #2d2d2d; border-radius: 16px; padding: 20px; width: 260px;
+  display: none; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+.result-card img { width: 100%; height: 300px; object-fit: cover; border-radius: 12px; }
+.result-card h3 { margin: 15px 0 10px 0; }
+.go-btn {
+  display: inline-block; background: #00d2d3; color: white; padding: 10px 20px;
+  border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 10px;
+}
+
+/* Общие стили для контейнера оценок */
+.ratings-block {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin: 20px 0;
+  font-family: sans-serif;
+}
+
+.rating-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 18px;
+  flex-wrap: nowrap;
+}
+
+.rating-author {
+  font-weight: bold;
+  width: 130px; 
+  flex-shrink: 0; 
+}
+
+.stars-container {
+  display: flex;
+  gap: 3px;
+  font-size: 24px; /* звёздочки */
+}
+
+/* Коля */
+.star.kolya-fill {
+  color: #9b5de5; /* Фиолетовый */
+}
+
+/* Ника */
+.star.nika-fill {
+  color: #ffcd3c; /* Жёлтый */
+}
+
+/* Цвет пустых (незаполненных) звёзд для обоих */
+.star.empty {
+  color: #e0e0e0;
+}
+
+.stars-inner.kolya-fill {
+  color: #9b5de5; /* Фиолетовый Коли */
+}
+
+.stars-inner.nika-fill {
+  color: #ffcd3c; /* Жёлтый Ники */
+}
+
+/* Модальное окно для полноэкранного просмотра картинок */
+.image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85); /* Затемнение фона */
+  z-index: 2000; /* Поверх всего сайта */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Когда окно активно */
+.image-modal.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Стиль самой открытой картинки */
+.image-modal img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.6);
+  user-select: none;
+}
+
+
+
+
+/* по приколу, для мобилок */
+@media(max-width: 1024px) { 
+  .grid { grid-template-columns: repeat(2, 1fr); } 
+}
+@media(max-width: 768px) {
+  .main-info { flex-direction: column; align-items: center; text-align: center; }
+  .gallery { grid-template-columns: repeat(3, 1fr); }
+}
+@media(max-width: 600px) { 
+  .grid { grid-template-columns: 1fr; } 
+}

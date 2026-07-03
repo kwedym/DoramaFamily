@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Колесо Фортуны</title>
+  <!-- Подключаем наш общий файл стилей -->
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Увеличиваем контейнер под большое колесо */
+    .wheel-container {
+      position: relative;
+      width: 500px;  /* Было меньше, теперь колесо здоровое и чёткое */
+      height: 500px;
+      margin: 20px auto;
+    }
+
+    .wheel {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 8px solid #333; /* Сделали рамку чуть солиднее */
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      /* Изменили кривую скорости для более чёткой и мягкой остановки */
+      transition: transform 4.5s cubic-bezier(0.15, 0.85, 0.3, 1);
+      background: #ccc;
+    }
+
+    /* Стрелочка теперь чуть более выраженная */
+    .pointer {
+      z-index: 10;
+    }
+
+    .wheel-segment {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+      transform-origin: 50% 50%;
+    }
+
+    /* Текст внутри увеличенного сектора */
+    .segment-text {
+      position: absolute;
+      left: 50%;
+      top: 12px; /* Чуть опустили от края */
+      transform: translateX(-50%) rotate(90deg);
+      transform-origin: bottom center;
+      width: 180px; /* Увеличили ширину под текст, так как колесо больше */
+      text-align: right;
+      font-size: 12px; /* Чуть крупнее шрифт */
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 1px 1px 3px #000, -1px -1px 3px #000;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  </style>
+</head>
+<body>
+
+  <a href="index.html" class="back">← В каталог</a>
+  <h1>🎡 Колесо выбора случайной дорамы</h1>
+  <p>Ну давай, крути, глянем что выпадет:D</p>
+
+  <div class="wheel-layout">
+    <div class="wheel-container">
+      <div class="pointer"></div>
+      <div class="wheel" id="wheel"></div>
+    </div>
+
+    <div class="result-card" id="resultCard">
+      <h2 style="color:#00d2d3; margin-top:0;">Выпало!</h2>
+      <img id="resImg" src="" alt="">
+      <h3 id="resTitle">Название</h3>
+      <a href="" id="resLink" class="go-btn">Открыть дораму</a>
+    </div>
+  </div>
+
+  <button class="spin-btn" id="spinBtn" onclick="spinWheel()">КРУТИТЬ КОЛЕСО</button>
+
+  <script src="data.js"></script>
+  <script>
+    const wheel = document.getElementById('wheel');
+    const spinBtn = document.getElementById('spinBtn');
+    const resultCard = document.getElementById('resultCard');
+    
+    const pool = doramasData.filter(d => d.status !== 'посмотрено');
+    let currentRotation = 0;
+
+    function initWheel() {
+      if (pool.length === 0) return;
+
+      const sectorAngle = 360 / pool.length;
+      let conicGradientParts = [];
+
+      pool.forEach((dorama, index) => {
+        const startAngle = index * sectorAngle;
+        const endAngle = (index + 1) * sectorAngle;
+        const color = dorama.color || '#ff4d79';
+
+        conicGradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+        const segment = document.createElement('div');
+        segment.className = 'wheel-segment';
+        const midAngle = startAngle + (sectorAngle / 2);
+        segment.style.transform = `rotate(${midAngle}deg)`;
+
+        const textDiv = document.createElement('div');
+        textDiv.className = 'segment-text';
+        textDiv.innerText = dorama.title;
+        
+        segment.appendChild(textDiv);
+        wheel.appendChild(segment);
+      });
+
+      wheel.style.background = `conic-gradient(${conicGradientParts.join(', ')})`;
+    }
+
+    initWheel();
+
+    function spinWheel() {
+      if (pool.length === 0) {
+        alert("Вы уже посмотрели абсолютно все дорамы из списка! 🥳");
+        return;
+      }
+
+      spinBtn.disabled = true;
+      resultCard.style.display = 'none';
+
+      const randomIndex = Math.floor(Math.random() * pool.length);
+      const chosenDorama = pool[randomIndex];
+
+      const sectorAngle = 360 / pool.length;
+      
+      // Чётко целимся в середину выпавшего сектора
+      const targetAngle = 360 - (randomIndex * sectorAngle) - (sectorAngle / 2);
+      const extraRotation = 2160; // 6 полных оборотов для солидности
+
+      currentRotation += extraRotation + (targetAngle - (currentRotation % 360));
+      wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+      setTimeout(() => {
+        spinBtn.disabled = false;
+        document.getElementById('resImg').src = chosenDorama.banner;
+        document.getElementById('resTitle').innerText = chosenDorama.title;
+        document.getElementById('resLink').href = `dorama.html?id=${chosenDorama.id}`;
+        resultCard.style.display = 'block';
+      }, 4500); // Время анимации совпадает с CSS (4.5 сек)
+
+
+    }
+  </script>
+</body>
+</html>
