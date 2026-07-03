@@ -6,7 +6,6 @@
   <title>Страница Дорамы</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Маленький доп-стиль для отображения тегов жанров */
     .genre-tag {
       display: inline-block;
       background: #333;
@@ -23,6 +22,29 @@
       border-radius: 8px;
       font-weight: bold;
     }
+    /* Новые стили для отображения сезонов и серий */
+    .runtime-box {
+      background: #2d2d2d;
+      border-left: 4px solid var(--dorama-color);
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    .season-badge {
+      display: inline-block;
+      background: #444;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 13px;
+      margin: 4px;
+      color: #fff;
+    }
+    .total-count-meta {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #00d2d3;
+    }
   </style>
 </head>
 <body>
@@ -35,21 +57,22 @@
       <div class="details">
         <h1 id="doramaTitle" class="dorama-h1">Загрузка...</h1>
         
-        <!-- СЮДА ВСТАВЯТСЯ ЖАНРЫ -->
         <div id="doramaGenres" style="margin-bottom: 15px;"></div>
+
+        <!-- СЮДА БУДУТ ВЫВОДИТЬСЯ СЕЗОНЫ / СЕРИИ ИЛИ ВРЕМЯ ФИЛЬМА -->
+        <div id="runtimeInfo"></div>
 
         <p class="desc" id="doramaDesc"></p>
         
-       <div class="rating-block" id="dorama-ratings"></div>
+        <div class="rating-block" id="dorama-ratings"></div>
 
-        <!-- ТЕКУЩИЙ СТАТУС ДОРАМЫ -->
         <div class="status-block">
           Статус просмотра: <span id="doramaStatus" style="color: var(--dorama-color);"></span>
         </div>
       </div>
     </div>
 
-    <h2>Галерея кадров (5 штук)</h2>
+    <h2>Галерея кадров</h2>
     <div class="gallery" id="doramaGallery"></div>
 
     <div class="reviews-section">
@@ -64,9 +87,11 @@
       </div>
     </div>
   </div>
-<div id="imageModal" class="image-modal">
-  <img id="modalImg" src="" alt="Просмотр изображения">
-</div>
+
+  <div id="imageModal" class="image-modal">
+    <img id="modalImg" src="" alt="Просмотр изображения">
+  </div>
+
   <script src="data.js"></script>
   <script>
     const urlParams = new URLSearchParams(window.location.search);
@@ -78,11 +103,9 @@
       document.getElementById('doramaTitle').innerText = dorama.title;
       document.getElementById('doramaDesc').innerText = dorama.description;
       document.getElementById('doramaBanner').src = dorama.banner;
-      
-      // Выводим статус
       document.getElementById('doramaStatus').innerText = dorama.status.toUpperCase();
 
-      // Выводим жанры на страницу
+      // Выводим жанры
       const genresContainer = document.getElementById('doramaGenres');
       if(dorama.genres) {
         dorama.genres.forEach(g => {
@@ -93,47 +116,73 @@
         });
       }
 
+      // КРАСИВЫЙ ВЫВОД СЕРИЙ И СЕЗОНОВ / ВРЕМЕНИ ПОЛНОМЕТРАЖКИ
+      const runtimeContainer = document.getElementById('runtimeInfo');
+      
+      if (dorama.type === 'movie') {
+        // Если это фильм
+        runtimeContainer.innerHTML = `
+          <div class="runtime-box">
+            <span>🎬 <b>Полнометражный фильм</b></span><br>
+            <span style="color: #ccc; font-size: 15px;">Продолжительность: ${dorama.duration || 'Не указана'}</span>
+          </div>
+        `;
+      } else {
+        // Если это сериал (по умолчанию, или если type === 'tv')
+        const seasonsList = dorama.seasons || [16]; // Защита, если забыли указать
+        const totalSeasons = seasonsList.length;
+        const totalEpisodes = seasonsList.reduce((sum, current) => sum + current, 0);
 
+        let seasonsHtml = '';
+        seasonsList.forEach((epCount, index) => {
+          seasonsHtml += `<span class="season-badge">Сезон ${index + 1}: <b>${epCount} сер.</b></span>`;
+        });
 
-renderDoramaRatings(dorama);
+        runtimeContainer.innerHTML = `
+          <div class="runtime-box">
+            <div class="total-count-meta">📺 Сериал: ${totalSeasons} ${totalSeasons === 1 ? 'сезон' : totalSeasons < 5 ? 'сезона' : 'сезонов'} (${totalEpisodes} сер. всего)</div>
+            <div style="margin-top: 5px;">
+              ${seasonsHtml}
+            </div>
+          </div>
+        `;
+      }
 
-      // Делаем кликабельным главный баннер
+      renderDoramaRatings(dorama);
+
+      // Работа с модальным окном картинок
       const mainBanner = document.getElementById('doramaBanner');
       if (mainBanner) {
         mainBanner.style.cursor = 'pointer';
         mainBanner.addEventListener('click', () => openModal(mainBanner.src));
       }
 
-      // Вывод галереи кадров с добавлением клика
       const galleryContainer = document.getElementById('doramaGallery');
-      dorama.images.forEach(imgUrl => {
-        const img = document.createElement('img');
-        img.src = imgUrl;
-        img.alt = "Кадр из дорамы";
-        
-        // При клике на кадр — открываем его
-        img.addEventListener('click', () => openModal(imgUrl));
-        
-        galleryContainer.appendChild(img);
-      });
+      if (dorama.images) {
+        dorama.images.forEach(imgUrl => {
+          const img = document.createElement('img');
+          img.src = imgUrl;
+          img.alt = "Кадр из дорамы";
+          img.addEventListener('click', () => openModal(imgUrl));
+          galleryContainer.appendChild(img);
+        });
+      }
 
-      // Логика работы модального окна
       const modal = document.getElementById('imageModal');
       const modalImg = document.getElementById('modalImg');
 
       function openModal(src) {
         modalImg.src = src;
         modal.classList.add('active');
-        document.body.style.overflow = 'hidden'; /* Отключаем прокрутку страницы */
+        document.body.style.overflow = 'hidden'; 
       }
 
-      // Закрытие при клике в любое место модалки
       modal.addEventListener('click', () => {
         modal.classList.remove('active');
-        document.body.style.overflow = ''; /* Возвращаем прокрутку */
+        document.body.style.overflow = ''; 
       });
 
-      // Вывод отзывов
+      // Отзывы
       if (dorama.ourReviews) {
         document.getElementById('reviewKolya').innerText = dorama.ourReviews.kolya || "Пока нет отзыва.";
         document.getElementById('reviewFriend').innerText = dorama.ourReviews.nika || "Пока нет отзыва.";
