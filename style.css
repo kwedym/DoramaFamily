@@ -12,7 +12,7 @@
 body {
   background-color: var(--bg-color);
   color: var(--text-color);
-  font-family: Arial, sans-serif;
+  font-family: "Arial", cursive;
   margin: 0; 
   padding: 20px;
   line-height: 1.25;
@@ -28,7 +28,7 @@ header {
   gap: 15px;
 }
 
-h1 { margin: 0; font-size: 28px; }
+h1 { margin: 0; font-size: 40px; font-family: "Rock Salt", cursive;}
 
 .menu-btn {
   background: var(--accent-color); 

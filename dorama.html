@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Страница Дорамы</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap" rel="stylesheet">
   <style>
     .genre-tag {
       display: inline-block;
@@ -22,7 +25,6 @@
       border-radius: 8px;
       font-weight: bold;
     }
-    /* Новые стили для отображения сезонов и серий */
     .runtime-box {
       background: #2d2d2d;
       border-left: 4px solid var(--dorama-color);
@@ -59,7 +61,6 @@
         
         <div id="doramaGenres" style="margin-bottom: 15px;"></div>
 
-        <!-- СЮДА БУДУТ ВЫВОДИТЬСЯ СЕЗОНЫ / СЕРИИ ИЛИ ВРЕМЯ ФИЛЬМА -->
         <div id="runtimeInfo"></div>
 
         <p class="desc" id="doramaDesc"></p>
@@ -116,7 +117,6 @@
         });
       }
 
-      // КРАСИВЫЙ ВЫВОД СЕРИЙ И СЕЗОНОВ / ВРЕМЕНИ ПОЛНОМЕТРАЖКИ
       const runtimeContainer = document.getElementById('runtimeInfo');
       
       if (dorama.type === 'movie') {
@@ -128,8 +128,7 @@
           </div>
         `;
       } else {
-        // Если это сериал (по умолчанию, или если type === 'tv')
-        const seasonsList = dorama.seasons || [16]; // Защита, если забыли указать
+        const seasonsList = dorama.seasons || [12]; 
         const totalSeasons = seasonsList.length;
         const totalEpisodes = seasonsList.reduce((sum, current) => sum + current, 0);
 
@@ -150,7 +149,6 @@
 
       renderDoramaRatings(dorama);
 
-      // Работа с модальным окном картинок
       const mainBanner = document.getElementById('doramaBanner');
       if (mainBanner) {
         mainBanner.style.cursor = 'pointer';
