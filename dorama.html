@@ -58,6 +58,7 @@
       <img id="doramaBanner" src="" alt="">
       <div class="details">
         <h1 id="doramaTitle" class="dorama-h1">Загрузка...</h1>
+      
         
         <div id="doramaGenres" style="margin-bottom: 15px;"></div>
 
@@ -78,16 +79,21 @@
 
     <div class="reviews-section">
       <h2>Наши отзывы и мнения</h2>
-      <div class="review-box">
-        <div class="review-author">Коля</div>
+      <div class="review-box" style="border-left-color: #9b5de5;">
+        <div class="review-author" style="color: #9b5de5;">Коля</div>
         <div id="reviewKolya">Оставь свой отзыв в базе данных...</div>
       </div>
-      <div class="review-box">
-        <div class="review-author">Ника</div>
-        <div id="reviewFriend">Отзыв подруги...</div>
+      <div class="review-box" style="border-left-color: #ffcd3c;">
+        <div class="review-author" style="color: #ffcd3c;">Ника</div>
+        <div id="reviewNika">Отзыв подруги...</div>
+      </div>
+      <div class="review-box" style="border-left-color: #5cf515;"> 
+        <div class="review-author" style="color: #5cf515;">Влад</div>
+        <div id="reviewVlad">Пока нет отзыва.</div>
       </div>
     </div>
-  </div>
+    </div>
+
 
   <div id="imageModal" class="image-modal">
     <img id="modalImg" src="" alt="Просмотр изображения">
@@ -106,7 +112,6 @@
       document.getElementById('doramaBanner').src = dorama.banner;
       document.getElementById('doramaStatus').innerText = dorama.status.toUpperCase();
 
-      // Выводим жанры
       const genresContainer = document.getElementById('doramaGenres');
       if(dorama.genres) {
         dorama.genres.forEach(g => {
@@ -120,14 +125,13 @@
       const runtimeContainer = document.getElementById('runtimeInfo');
       
       if (dorama.type === 'movie') {
-        // Если это фильм
         runtimeContainer.innerHTML = `
           <div class="runtime-box">
             <span>🎬 <b>Полнометражный фильм</b></span><br>
             <span style="color: #ccc; font-size: 15px;">Продолжительность: ${dorama.duration || 'Не указана'}</span>
           </div>
         `;
-      } else {
+} else {
         const seasonsList = dorama.seasons || [12]; 
         const totalSeasons = seasonsList.length;
         const totalEpisodes = seasonsList.reduce((sum, current) => sum + current, 0);
@@ -140,14 +144,56 @@
         runtimeContainer.innerHTML = `
           <div class="runtime-box">
             <div class="total-count-meta">📺 Сериал: ${totalSeasons} ${totalSeasons === 1 ? 'сезон' : totalSeasons < 5 ? 'сезона' : 'сезонов'} (${totalEpisodes} сер. всего)</div>
+            <div style="color: #ccc; font-size: 15px; margin-bottom: 8px;">⏱ В среднем серия длится: <b>${dorama.episodeDuration || 'Не указано'}</b></div>
             <div style="margin-top: 5px;">
               ${seasonsHtml}
             </div>
           </div>
         `;
       }
+      const ratingsBlock = document.getElementById('dorama-ratings');
+      ratingsBlock.innerHTML = '';
+      ratingsBlock.className = 'ratings-block'; // Применяем класс из style.css
 
-      renderDoramaRatings(dorama);
+      const reviewUsers = [
+        { name: 'Коля', key: 'kolya', fillClass: 'kolya-fill' },
+        { name: 'Ника', key: 'nika', fillClass: 'nika-fill' },
+        { name: 'Влад', key: 'vlad', fillClass: 'vlad-fill' }
+      ];
+
+      reviewUsers.forEach(user => {
+        const userRating = dorama.ratings && dorama.ratings[user.key] ? dorama.ratings[user.key] : 0;
+        
+        const row = document.createElement('div');
+        row.className = 'rating-row';
+
+        // Имя
+        const authorDiv = document.createElement('div');
+        authorDiv.className = 'rating-author';
+        authorDiv.innerText = `${user.name}:`;
+        row.appendChild(authorDiv);
+
+        const starsContainer = document.createElement('div');
+        starsContainer.className = 'stars-outer';
+
+        const starsInner = document.createElement('div');
+        starsInner.className = `stars-inner ${user.fillClass}`;
+        
+        const widthPercent = Math.min(Math.max((userRating / 10) * 100, 0), 100);
+        starsInner.style.width = `${widthPercent}%`;
+
+        starsContainer.appendChild(starsInner);
+        row.appendChild(starsContainer);
+
+        const valSpan = document.createElement('span');
+        valSpan.className = 'rating-val';
+        valSpan.innerText = userRating > 0 ? userRating.toFixed(1) : '0.0';
+        row.appendChild(valSpan);
+
+        ratingsBlock.appendChild(row);
+      });
+
+
 
       const mainBanner = document.getElementById('doramaBanner');
       if (mainBanner) {
@@ -180,17 +226,65 @@
         document.body.style.overflow = ''; 
       });
 
-      // Отзывы
-      if (dorama.ourReviews) {
+
+ if (dorama.ourReviews) {
         document.getElementById('reviewKolya').innerText = dorama.ourReviews.kolya || "Пока нет отзыва.";
-        document.getElementById('reviewFriend').innerText = dorama.ourReviews.nika || "Пока нет отзыва.";
+        document.getElementById('reviewNika').innerText = dorama.ourReviews.nika || "Пока нет отзыва.";
+        document.getElementById('reviewVlad').innerText = dorama.ourReviews.vlad || "Пока нет отзыва.";
       } else {
         document.getElementById('reviewKolya').innerText = "Пока нет отзыва.";
-        document.getElementById('reviewFriend').innerText = "Пока нет отзыва.";
+        document.getElementById('reviewNika').innerText = "Пока нет отзыва.";
+        document.getElementById('reviewVlad').innerText = "Пока нет отзыва.";
       }
     } else {
       document.body.innerHTML = "<h1>Дорама не найдена!</h1><a href='index.html'>Назад</a>";
     }
+
+
+    if (dorama.yearStart) {
+  const yearsBox = document.createElement('div');
+  yearsBox.style.margin = "10px 0";
+  yearsBox.style.fontSize = "16px";
+  yearsBox.style.color = "#aaa";
+  
+  if (dorama.yearStart === dorama.yearEnd || !dorama.yearEnd) {
+    yearsBox.innerHTML = `📅 <b>Год выпуска:</b> ${dorama.yearStart}`;
+  } else {
+    yearsBox.innerHTML = `📅 <b>Период трансляции:</b> ${dorama.yearStart} — ${dorama.yearEnd}`;
+  }
+  document.getElementById('doramaDesc').before(yearsBox);
+}
+
+let internalYearText = '';
+
+if (currentDorama.startYear) {
+  if (currentDorama.endYear && currentDorama.endYear !== currentDorama.startYear) {
+    internalYearText = `${currentDorama.startYear} - ${currentDorama.endYear}`;
+  } else {
+    internalYearText = `${currentDorama.startYear}`;
+  }
+}
+
+
+if (dorama.isOngoing !== undefined) {
+  const ongoingBox = document.createElement('div');
+  ongoingBox.style.margin = "10px 0";
+  ongoingBox.style.padding = "5px 10px";
+  ongoingBox.style.borderRadius = "6px";
+  ongoingBox.style.display = "inline-block";
+  ongoingBox.style.fontWeight = "bold";
+  
+  if (dorama.isOngoing) {
+    ongoingBox.style.background = "rgba(0, 210, 211, 0.2)";
+    ongoingBox.style.color = "#00d2d3";
+    ongoingBox.innerHTML = "⏳ Выпускается (Онгоинг)";
+  } else {
+    ongoingBox.style.background = "rgba(238, 82, 83, 0.2)";
+    ongoingBox.style.color = "#ee5253";
+    ongoingBox.innerHTML = "✅ Завершен";
+  }
+  document.getElementById('doramaDesc').before(ongoingBox);
+}
   </script>
 </body>
 </html>

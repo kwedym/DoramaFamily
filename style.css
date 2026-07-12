@@ -231,7 +231,6 @@ input[type="text"] { flex-grow: 1; }
   border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 10px;
 }
 
-/* Общие стили для контейнера оценок */
 .ratings-block {
   display: flex;
   flex-direction: column;
@@ -257,30 +256,30 @@ input[type="text"] { flex-grow: 1; }
 .stars-container {
   display: flex;
   gap: 3px;
-  font-size: 24px; /* звёздочки */
+  font-size: 24px; 
 }
 
 /* Коля */
 .star.kolya-fill {
-  color: #9b5de5; /* Фиолетовый */
+  color: #9b5de5; 
 }
 
 /* Ника */
 .star.nika-fill {
-  color: #ffcd3c; /* Жёлтый */
+  color: #ffcd3c;
 }
 
-/* Цвет пустых (незаполненных) звёзд для обоих */
+
 .star.empty {
   color: #e0e0e0;
 }
 
 .stars-inner.kolya-fill {
-  color: #9b5de5; /* Фиолетовый Коли */
+  color: #9b5de5; 
 }
 
 .stars-inner.nika-fill {
-  color: #ffcd3c; /* Жёлтый Ники */
+  color: #ffcd3c; 
 }
 
 .image-modal {
@@ -327,4 +326,12 @@ input[type="text"] { flex-grow: 1; }
 }
 @media(max-width: 600px) { 
   .grid { grid-template-columns: 1fr; } 
+}
+
+.star.vlad-fill {
+  color: #5cf515; 
+}
+
+.stars-inner.vlad-fill {
+  color: #5cf515; 
 }
