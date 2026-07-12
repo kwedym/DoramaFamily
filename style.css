@@ -313,7 +313,15 @@ input[type="text"] { flex-grow: 1; }
   user-select: none;
 }
 
+.star.is-negative,
+.stars-inner.is-negative {
+  color: #ff3333 !important;
+}
 
+.rating-val.is-negative {
+  color: #ff3333;
+  font-weight: bold;
+}
 
 
 /* по приколу, для мобилок */
